@@ -1,14 +1,5 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<!-- <link rel="stylesheet" type="text/css" title="main" href="index.css"> -->
-<!-- <script src="https://d3js.org/d3.v3.min.js"  charset="utf-8"></script> -->
-<!-- <script src="index.js"></script> -->
-
-<body>
-
-<div class="chart"></div>
-
-</body>
 <style>
 
 .chart rect {
@@ -22,59 +13,46 @@
 }
 
 </style>
-<svg class="chart">
+<svg class="chart"></svg>
+<script src="https://d3js.org/d3.v5.min.js"></script>
 
-  <g transform="translate(0,60)">
-    <rect width="250" height="29"></rect>
-    <text x="147" y="12.5" dy=".45em">15</text>
-  </g>
-
-</svg>
-<script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
 <script>
 
-var width = 1220,
-    barHeight = 20;
+var width = 960,
+    height = 500;
 
-// var x = d3.scale.linear()
-//     .range([0, width]);
-
-var x = d => d ;
+var y = d3.scale.linear()
+    .range([height, 0]);
 
 var chart = d3.select(".chart")
-    .attr("width", width);
+    .attr("width", width)
+    .attr("height", height);
 
 d3.tsv("test.tsv", type, function(error, data) {
+  y.domain([0, d3.max(data, function(d) { return d.value; })]);
 
-  console.log(data) 
-  console.log(data.length) 
-
-  // x.domain([0, d3.max(data, function(d) {    return (2*d.Book) ; })]);
-
-  chart.attr("height", barHeight * data.length);
-
+  var barWidth = width / data.length;
 
   var bar = chart.selectAll("g")
       .data(data)
     .enter().append("g")
-      .attr("transform", function(d, i) { console.log(i*barHeight);return "translate(0," + i * barHeight + ")"; });
+      .attr("transform", function(d, i) { return "translate(" + i * barWidth + ",0)"; });
 
   bar.append("rect")
-      .attr("width", function(d) {  console.log (x((10*d.Book))) ;return x((10*d.Book) ); })
-      .attr("height", barHeight - 1);
+      .attr("y", function(d) { return y(d.value); })
+      .attr("height", function(d) { return height - y(d.value); })
+      .attr("width", barWidth - 1);
 
   bar.append("text")
-      .attr("x", function(d) { console.log(d.Book) ; return x((10 *d.Book) ) - 3; })
-      .attr("y", barHeight / 2)
-      .attr("dy", ".35em")
-      .text(function(d) { return d.Date; });
+      .attr("x", barWidth / 2)
+      .attr("y", function(d) { return y(d.value) + 3; })
+      .attr("dy", ".75em")
+      .text(function(d) { return d.value; });
 });
 
 function type(d) {
-  d.Book = +d.Book; // coerce to number
+  d.value = +d.value; // coerce to number
   return d;
 }
 
-
 </script>
-<!-- hello -->
