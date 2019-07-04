@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>D3 Example</title>
+    <title>D3 Insight </title>
     <script src="//cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
 
     <style>
@@ -17,16 +17,16 @@
   <body>
     <script>
 
-      var outerWidth = 400;
-      var outerHeight = 450;
+      var outerWidth = 500;
+      var outerHeight = 550;
       var margin = { left: 30, top: 30, right: 30, bottom: 30 };
 
     var innerWidth  = outerWidth  - margin.left - margin.right;
     var innerHeight = outerHeight - margin.top  - margin.bottom;
-      var rMin = 3; // "r" stands for radius
-      var rMax = 20;
+      var rMin = 2; // "r" stands for radius
+      var rMax = 30;
       var xColumn = "Book";
-      var yColumn = "\"Dev \"";
+      var yColumn = "Dev";
       var rColumn = "Stats";
 
       var svg = d3.select("body").append("svg")
@@ -43,26 +43,26 @@
       function render(data){
         xScale.domain(d3.extent(data, function (d){ return d[xColumn]; }));
         yScale.domain(d3.extent(data, function (d){ return d[yColumn]; }));
-        rScale.domain(d3.extent(data, function (d){ return d[rColumn]; }));
+        rScale.domain([0, d3.max(data, function (d){ return d[rColumn]; })]);
 
         console.log(data)
         var circles = g.selectAll("circle").data(data);
         circles.enter().append("circle");
         circles
-          .attr("cx", function (d){ console.log(d[xColumn]) ;return xScale(d[xColumn]); })
-          .attr("cy", function (d){ console.log(d[yColumn]);return yScale(d[yColumn]); })
-          .attr("r",  function (d){ return rMin; });
+          .attr("cx", function (d){  return xScale(d[xColumn]); })
+          .attr("cy", function (d){ return yScale(d[yColumn]); })
+          .attr("r",  function (d){ return rScale(d[rColumn]); });
         circles.exit().remove();
       }
 
       function type(d){
         d.Book = +d.Book;
-        d["Dev "] = +d["Dev "]; 
+        d.Dev = +d.Dev
         d.Stats = +d.Stats;
         return d;
       }
 
-      d3.tsv("data.tsv", type, render);
+      d3.csv("data.csv", type, render);
 
     </script>
   </body>
