@@ -17,7 +17,7 @@
       }
       .axis text {
         font-family: "Poiret One", cursive;
-        font-size: 16pt;
+        font-size: 11pt;
       }
       .axis .label {
         font-size: 20pt;
@@ -99,35 +99,45 @@
         .attr("class", "label")
         .text(yAxisLabelText);
 
-      var xScale = d3.time
-        .scale()
-        .nice(d3.time.day)
-        .range([0, innerWidth]);
-
-      var yScale = d3.scale.linear().range([innerHeight, 0]);
-      var rScale = d3.scale.linear().range([rMin, rMax]);
-
-      var xAxis = d3.svg
-        .axis()
-        .scale(xScale)
-        .orient("bottom")
-        .ticks(8)
-        .tickFormat(d3.format("s"))
-        .outerTickSize(0);
-      var yAxis = d3.svg
-        .axis()
-        .scale(yScale)
-        .orient("left")
-        .ticks(5)
-        .tickFormat(d3.format("s"))
-        .outerTickSize(0);
-
       function render(data) {
-        xScale.domain(
-          d3.extent(data, function(d) {
-            return d[xColumn];
-          })
-        );
+        var xScale = d3.time
+          .scale()
+          .domain(
+            d3.extent(data, function(d) {
+              return d[xColumn];
+            })
+          )
+          .nice(d3.time.week)
+          .range([0, innerWidth]);
+        //   .nice();
+        var yScale = d3.scale.linear().range([innerHeight, 0]);
+        var rScale = d3.scale.linear().range([rMin, rMax]);
+
+        var xAxis = d3.svg
+          .axis()
+          .scale(xScale)
+          .orient("bottom")
+          .tickFormat(d3.time.format("%B"));
+        //   .attr("transform", "rotate(-65)");
+        var yAxis = d3.svg
+          .axis()
+          .scale(yScale)
+          .orient("left")
+          .ticks(5)
+          .tickFormat(d3.format("s"))
+          .outerTickSize(0);
+
+        let temp = d3.extent(data, function(d) {
+          return d[xColumn];
+        });
+        console.log(temp);
+
+        let temptime = d3.time
+          .scale()
+          .domain(temp)
+          .rangeRound([0, innerWidth]);
+        //   .ticks(d3.time.week.round, 1);
+        console.log(temptime(new Date(2019, 5, 1)));
         yScale.domain(
           d3.extent(data, function(d) {
             return d[yColumn];
