@@ -11,12 +11,20 @@
       type="text/css"
     />
     <style>
+      circle {
+        fill: steelblue;
+        opacity: 0.4;
+      }
       .axis text {
         font-family: "Poiret One", cursive;
         font-size: 16pt;
       }
       .axis .label {
         font-size: 20pt;
+      }
+      .title {
+        font-size: 2.1em;
+        fill: #635f5d;
       }
 
       .axis path,
@@ -29,14 +37,14 @@
   </head>
   <body>
     <script>
-      var outerWidth = 600;
+      var outerWidth = 800;
       var outerHeight = 600;
-      var margin = { left: 70, top: 40, right: 40, bottom: 60 };
+      var margin = { left: 70, top: 60, right: 40, bottom: 60 };
 
       var innerWidth = outerWidth - margin.left - margin.right;
       var innerHeight = outerHeight - margin.top - margin.bottom;
       var rMin = 5; // "r" stands for radius
-      var rMax = 17;
+      var rMax = 8;
       var xColumn = "Date";
       var yColumn = "Dev";
       var rColumn = "Stats";
@@ -47,6 +55,7 @@
       let yAxisLabelOffset = 50;
       let yAxisLabelText = "Development time (hr)";
 
+      let title = "A Year of development";
       var svg = d3
         .select("body")
         .append("svg")
@@ -57,6 +66,10 @@
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
+      g.append("text")
+        .attr("class", "title")
+        .attr("y", -20)
+        .text(title);
       var xAxisG = g
         .append("g")
         .attr("class", "x axis")
@@ -86,19 +99,14 @@
         .attr("class", "label")
         .text(yAxisLabelText);
 
-      var xScale = d3.scale.linear().range([0, innerWidth]);
+      var xScale = d3.time
+        .scale()
+        .nice(d3.time.day)
+        .range([0, innerWidth]);
+
       var yScale = d3.scale.linear().range([innerHeight, 0]);
       var rScale = d3.scale.linear().range([rMin, rMax]);
-      var colorScale = d3.scale
-        .quantize()
-        .range(colorbrewer.YlOrBr[9].slice(-8))
-        .domain([0, 9]);
 
-      for (let i = 0; i < 9; i++) {
-        console.log(i, colorScale(i));
-      }
-
-      console.log(colorbrewer);
       var xAxis = d3.svg
         .axis()
         .scale(xScale)
@@ -147,10 +155,8 @@
           })
           .attr("r", function(d) {
             return rScale(d[rColumn]);
-          })
-          .attr("fill", function(d) {
-            return colorScale(d[colorColumn]);
           });
+
         circles.exit().remove();
       }
 
@@ -160,7 +166,7 @@
         d.Waste = +d.Waste;
         d.Stats = +d.Stats;
         d.Date = new Date(d.Date);
-        console.log(d);
+        // console.log(d);
 
         return d;
       }
