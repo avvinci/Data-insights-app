@@ -13,7 +13,8 @@
 }
 
 </style>
-<svg class="chart"></svg><script src="https://d3js.org/d3.v5.js"></script>
+<svg class="chart"></svg>
+<script src="https://d3js.org/d3.v5.js"></script>
 <script>
 
 var width = 560,
@@ -27,7 +28,7 @@ var chart = d3.select(".chart")
     .attr("height", height);
 
 
-d3.tsv("data2.tsv").then(function(data) {
+d3.tsv("data.tsv").then(function(data) {
     y.domain([0, d3.max(data, function(d) { return d.value; })]);
 
 var barWidth = width / data.length;

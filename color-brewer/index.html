@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+    <title>D3 and colorbrewer color ranges in d3.js</title>
+    <script type="text/javascript" src="http://d3js.org/d3.v4.min.js"></script>
+    <script src="http://colorbrewer2.org/export/colorbrewer.js"></script>
+    <style>
+
+	    html, body {
+			height: 100%;
+	    	width: 100%;
+		    margin: 0;
+		    padding: 0;
+	    }
+
+	    text {
+		    font-family: arial;
+		    font-size: 12px;
+	    }
+
+	    text.blue { fill: mediumblue; }
+	    text.red { fill: crimson; }
+	    text.green { fill: darkgreen; }
+
+		.axis path,
+		.axis line {
+		  fill: none;
+		  stroke: slategray;
+		  shape-rendering: crispEdges;
+		}
+    </style>
+  </head>
+  <body>
+
+	<script type="text/javascript">
+
+		var chartWidth = 300;
+		var chartHeight = 50;
+		var svg = d3.select("body").append("svg").attr("id","svg").attr("width","100%").attr("height","300%");
+		var newY = 0;
+
+		var brewer = d3.entries(colorbrewer);
+
+		for (var p=0; p<brewer.length; p++) {
+			var svgGroup = svg.append("g").attr("transform","translate(0,"+(((p+1)*chartHeight)+newY)+")");
+			svgGroup.append("text").attr("class","green").attr("x","240").attr("y",0).attr("alignment-baseline","middle").attr("text-anchor","end").text(brewer[p].key);
+
+			for (var q=0; q<brewer[p].value[d3.keys(brewer[p].value).map(Number).sort(d3.descending)[0]].length; q++) {
+				svgGroup.append("rect").attr("x",(q*15)+270).attr("y","-7").attr("width","14").attr("height","14").attr("fill",brewer[p].value[d3.keys(brewer[p].value).map(Number).sort(d3.descending)[0]][q]);
+			}
+		}
+
+		var svg = document.getElementById("svg");
+		var bb = svg.getBBox();
+		svg.style.height = bb.y + bb.height + "px";
+
+	</script>
+  </body>
+</html>
