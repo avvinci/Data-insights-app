@@ -128,17 +128,6 @@
           .tickFormat(d3.format("s"))
           .outerTickSize(0);
 
-        let temp = d3.extent(data, function(d) {
-          return d[xColumn];
-        });
-        console.log(temp);
-
-        let temptime = d3.time
-          .scale()
-          .domain(temp)
-          .rangeRound([0, innerWidth]);
-        //   .ticks(d3.time.week.round, 1);
-        console.log(temptime(new Date(2019, 5, 1)));
         yScale.domain(
           d3.extent(data, function(d) {
             return d[yColumn];
@@ -182,6 +171,34 @@
       }
 
       d3.csv("data.csv", type, render);
+
+      function newType(d, i) {
+        d.Book = +d.Book;
+        d.Dev = +d.Dev;
+        d.Waste = +d.Waste;
+        d.Stats = +d.Stats;
+        // var k = new Date(d.Date);
+        // d.Date = k.getMonth();
+        d.Date = new Date(d.Date);
+        // console.log(d);
+      }
+      d3.csv("data.csv", function(error, csv_data) {
+        var data = d3
+          .nest()
+          .key(function(d) {
+            console.log(new Date(d.Date).getMonth());
+            return new Date(d.Date).getMonth().toString;
+          })
+          .rollup(function(d) {
+            return d3.sum(d, function(g) {
+              return g.value;
+            });
+          })
+          .entries(csv_data);
+        console.log(csv_data);
+      });
+
+      //   console.log(csv_data);
     </script>
   </body>
 </html>
