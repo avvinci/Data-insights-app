@@ -43,19 +43,20 @@
 
       var innerWidth = outerWidth - margin.left - margin.right;
       var innerHeight = outerHeight - margin.top - margin.bottom;
+
       var rMin = 5; // "r" stands for radius
-      var rMax = 7;
-      var xColumn = "key";
-      var yColumn = "values";
-      var rColumn = "values";
-      var colorColumn = "Waste";
+      var rMax = 17;
+      var xColumn = "Date";
+      var yColumn = "Dev";
+      var rColumn = "Book";
+      var colorColumn = "Dev";
 
       let xAxisLabelOffset = 50;
       let xAxisLabelText = "Date";
       let yAxisLabelOffset = 50;
       let yAxisLabelText = "Development time (hr)";
-
       let title = "A Year of development";
+
       var svg = d3
         .select("body")
         .append("svg")
@@ -105,12 +106,14 @@
         var yScale = d3.scale.linear().range([innerHeight, 0]);
         var rScale = d3.scale.linear().range([rMin, rMax]);
 
+        console.log("renderdata", data);
         var xAxis = d3.svg
           .axis()
           .scale(xScale)
           .orient("bottom")
-          .ticks(6)
-          .tickFormat(d3.time.format("%d%B"));
+          .ticks(5)
+          .tickFormat(d3.format("s"))
+          .outerTickSize(0);
         //   .attr("transform", "rotate(-65)");
         var yAxis = d3.svg
           .axis()
@@ -157,26 +160,7 @@
         circles.exit().remove();
       }
 
-      //   function type(d, i) {
-      //     d.Book = +d.Book;
-      //     d.Dev = +d.Dev;
-      //     d.Waste = +d.Waste;
-      //     d.Stats = +d.Stats;
-      //     d.Date = new Date(d.Date);
-      //     // console.log(d);
-      //     if (i > 40) return d;
-      //   }
-
-      //   d3.csv("data.csv", type, render);
-
-      function newType(d, i) {
-        d.Book = +d.Book;
-        d.Dev = +d.Dev;
-        d.Waste = +d.Waste;
-        d.Stats = +d.Stats;
-        d.Date = new Date(d.Date);
-      }
-
+  
       d3.csv("data.csv", function(error, csv_data) {
         var data = d3
           .nest()
@@ -190,12 +174,23 @@
                 return g.Dev;
               })
             );
-            return d3.sum(d, function(g) {
-              return g.Dev;
-            });
+            return {
+              dev: d3.sum(d, function(g) {
+                return g.Dev;
+              }),
+              book: d3.sum(d, function(g) {
+                return g.Book;
+              })
+            };
           })
           .entries(csv_data);
+        data.forEach(function(d) {
+          d.Date = 1 + +d.key;
+          d.Book = d.values.book;
+          d.Dev = d.values.dev;
+        });
         console.log(data);
+
         render(data);
       });
 
