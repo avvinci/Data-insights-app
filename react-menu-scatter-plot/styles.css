@@ -1,0 +1,22 @@
+circle {
+  fill: steelblue;
+  opacity: 0.4;
+}
+.axis text {
+  font-family: "Poiret One", cursive;
+  font-size: 11pt;
+}
+.axis .label {
+  font-size: 20pt;
+}
+.title {
+  font-size: 2.1em;
+  fill: #635f5d;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}

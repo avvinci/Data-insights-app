@@ -44,11 +44,11 @@
       var innerWidth = outerWidth - margin.left - margin.right;
       var innerHeight = outerHeight - margin.top - margin.bottom;
 
-      var rMin = 5; // "r" stands for radius
+      var rMin = 5;
       var rMax = 17;
       var xColumn = "Date";
       var yColumn = "Dev";
-      var rColumn = "Book";
+      var rColumn = "Stats";
       var colorColumn = "Dev";
 
       let xAxisLabelOffset = 50;
@@ -142,7 +142,7 @@
 
         xAxisG.call(xAxis);
         yAxisG.call(yAxis);
-        console.log(data);
+        // console.log(data);
 
         var circles = g.selectAll("circle").data(data);
         circles.enter().append("circle");
@@ -155,17 +155,22 @@
           })
           .attr("r", function(d) {
             return rScale(d[rColumn]);
+          })
+          .on("mouseenter", function() {
+            d3.select(this).attr("opacity", 0.5);
+          })
+          .on("mouseleave", function(actual, i) {
+            d3.select(this).attr("opacity", 1);
           });
 
         circles.exit().remove();
       }
 
-  
       d3.csv("data.csv", function(error, csv_data) {
         var data = d3
           .nest()
           .key(function(d) {
-            console.log(new Date(d.Date).getMonth());
+            // console.log(new Date(d.Date).getMonth());
             return new Date(d.Date).getMonth();
           })
           .rollup(function(d) {
@@ -180,6 +185,9 @@
               }),
               book: d3.sum(d, function(g) {
                 return g.Book;
+              }),
+              stats: d3.sum(d, function(g) {
+                return g.Stats;
               })
             };
           })
@@ -188,7 +196,9 @@
           d.Date = 1 + +d.key;
           d.Book = d.values.book;
           d.Dev = d.values.dev;
+          d.Stats = d.values.stats;
         });
+        // delete data.values;
         console.log(data);
 
         render(data);
